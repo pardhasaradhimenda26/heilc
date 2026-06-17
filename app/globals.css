@@ -1,0 +1,174 @@
+@import url("https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --font-bebas: "Bebas Neue", Impact, sans-serif;
+  --font-satoshi: "Satoshi", -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+html {
+  scroll-behavior: auto; /* Lenis handles this */
+}
+
+body {
+  background: #080808;
+  color: #ffffff;
+  font-family: var(--font-satoshi);
+  overflow-x: hidden;
+  cursor: none; /* Custom cursor */
+}
+
+/* Custom cursor */
+.cursor-dot {
+  width: 8px;
+  height: 8px;
+  background: #14c5d4;
+  border-radius: 50%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  z-index: 99999;
+  transform: translate(-50%, -50%);
+  transition: transform 0.05s ease;
+}
+
+.cursor-ring {
+  width: 32px;
+  height: 32px;
+  border: 1.5px solid #14c5d4;
+  border-radius: 50%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  z-index: 99998;
+  transform: translate(-50%, -50%);
+  transition: all 0.12s ease;
+}
+
+.cursor-ring.hovered {
+  width: 48px;
+  height: 48px;
+  background: rgba(20, 197, 212, 0.1);
+}
+
+/* Grain texture */
+.grain::before {
+  content: "";
+  position: fixed;
+  top: -50%;
+  left: -50%;
+  right: -50%;
+  bottom: -50%;
+  width: 200%;
+  height: 200%;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+  opacity: 0.035;
+  pointer-events: none;
+  z-index: 9999;
+  animation: grain 0.5s steps(1) infinite;
+}
+
+@keyframes grain {
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+  10% {
+    transform: translate(-2%, -3%);
+  }
+  20% {
+    transform: translate(3%, 2%);
+  }
+  30% {
+    transform: translate(-1%, 4%);
+  }
+  40% {
+    transform: translate(4%, -1%);
+  }
+  50% {
+    transform: translate(-3%, 3%);
+  }
+  60% {
+    transform: translate(2%, -4%);
+  }
+  70% {
+    transform: translate(-4%, 2%);
+  }
+  80% {
+    transform: translate(3%, -2%);
+  }
+  90% {
+    transform: translate(-2%, 4%);
+  }
+}
+
+/* Smooth scrollbar hide */
+::-webkit-scrollbar {
+  width: 4px;
+}
+::-webkit-scrollbar-track {
+  background: #080808;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(20, 197, 212, 0.3);
+  border-radius: 2px;
+}
+
+/* Selection */
+::selection {
+  background: rgba(20, 197, 212, 0.3);
+  color: #ffffff;
+}
+
+/* Utility classes */
+@layer utilities {
+  .text-gradient {
+    background: linear-gradient(135deg, #14c5d4, #7c5cbf);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .glass-card {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(12px);
+  }
+
+  .glass-card-hover {
+    transition: all 0.3s ease;
+  }
+
+  .glass-card-hover:hover {
+    background: rgba(20, 197, 212, 0.06);
+    border-color: rgba(20, 197, 212, 0.3);
+    box-shadow: 0 0 30px rgba(20, 197, 212, 0.08);
+  }
+
+  .section-label {
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: #14c5d4;
+    font-family: var(--font-satoshi);
+  }
+
+  .hero-text {
+    font-family: var(--font-bebas);
+    font-size: clamp(60px, 10vw, 120px);
+    line-height: 0.95;
+    letter-spacing: -0.01em;
+    text-transform: uppercase;
+  }
+}
