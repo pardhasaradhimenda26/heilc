@@ -77,7 +77,7 @@ export default function Hero() {
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 2.5 }}
-          className="absolute top-20 right-6 z-10 flex items-center gap-2 px-4 py-2 rounded-full"
+          className="absolute top-24 left-1/2 -translate-x-1/2 md:left-auto md:translate-x-0 md:right-6 z-10 flex items-center gap-2 px-4 py-2 rounded-full whitespace-nowrap"
           style={{
             background: "rgba(20,197,212,0.1)",
             border: "1px solid rgba(20,197,212,0.25)",
@@ -90,8 +90,6 @@ export default function Hero() {
             <span className="text-teal font-semibold">
               {detectionData.city}, {detectionData.country}
             </span>
-            {" · "}
-            <span className="text-white/40">{detectionData.reason}</span>
           </span>
         </motion.div>
       )}
@@ -175,16 +173,16 @@ export default function Hero() {
       </div>
 
       {/* Bottom CTA */}
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 flex gap-4">
+      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 flex flex-col sm:flex-row gap-3 sm:gap-4 w-[90%] sm:w-auto text-center justify-center">
         <a
           href="#work"
-          className="px-6 py-3 bg-teal text-black text-sm font-bold rounded-full hover:opacity-90 transition-opacity"
+          className="px-5 py-2.5 sm:px-6 sm:py-3 bg-teal text-black text-xs sm:text-sm font-bold rounded-full hover:opacity-90 transition-opacity block sm:inline-block"
         >
           View Our Work
         </a>
         <a
           href="#contact"
-          className="px-6 py-3 border border-white/20 text-white text-sm rounded-full hover:border-teal hover:text-teal transition-all"
+          className="px-5 py-2.5 sm:px-6 sm:py-3 border border-white/20 text-white text-xs sm:text-sm rounded-full hover:border-teal hover:text-teal transition-all block sm:inline-block"
         >
           Book a Call
         </a>

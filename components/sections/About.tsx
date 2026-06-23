@@ -2,6 +2,7 @@
 import { motion, useScroll, useTransform } from "framer-motion";
 import { useRef, useState, useEffect } from "react";
 import { usePersona } from "../features/PersonaContext";
+import { Compass } from "lucide-react";
 
 const stats = [
   { num: "10+", label: "Projects Delivered" },
@@ -14,7 +15,7 @@ export default function About() {
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
   const imgY = useTransform(scrollYProgress, [0, 1], ["0%", "15%"]);
 
-  const { detectionData } = usePersona();
+  const { detectionData, refineLocation, isRefining } = usePersona();
   const [timeState, setTimeState] = useState({ 
     time: "", 
     date: "",
@@ -26,32 +27,82 @@ export default function About() {
   useEffect(() => {
     const formatTime = () => {
       const now = new Date();
-      const timeString = new Intl.DateTimeFormat("en-US", {
-        hour: "2-digit",
-        minute: "2-digit",
-        second: "2-digit",
-        hour12: true
-      }).format(now);
-      
-      const dateString = new Intl.DateTimeFormat("en-US", {
-        weekday: "short",
-        month: "short",
-        day: "numeric"
-      }).format(now);
+      let timeZone = detectionData?.timezone || undefined;
+      if (timeZone === "undefined" || timeZone === "null" || !timeZone) {
+        timeZone = undefined;
+      }
+
+      let timeString = "";
+      let dateString = "";
+      try {
+        timeString = new Intl.DateTimeFormat("en-US", {
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit",
+          hour12: true,
+          timeZone
+        }).format(now);
+        
+        dateString = new Intl.DateTimeFormat("en-US", {
+          weekday: "short",
+          month: "short",
+          day: "numeric",
+          timeZone
+        }).format(now);
+      } catch (err) {
+        // Fallback to system timezone on error
+        timeString = new Intl.DateTimeFormat("en-US", {
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit",
+          hour12: true
+        }).format(now);
+        
+        dateString = new Intl.DateTimeFormat("en-US", {
+          weekday: "short",
+          month: "short",
+          day: "numeric"
+        }).format(now);
+      }
+
+      let targetHours = now.getHours();
+      let targetMinutes = now.getMinutes();
+      let targetSeconds = now.getSeconds();
+
+      if (timeZone) {
+        try {
+          const timeStr = new Intl.DateTimeFormat("en-US", {
+            hour: "numeric",
+            minute: "numeric",
+            second: "numeric",
+            hour12: false,
+            timeZone
+          }).format(now);
+
+          const match = timeStr.match(/(\d+):(\d+):(\d+)/);
+          if (match) {
+            targetHours = parseInt(match[1], 10);
+            targetMinutes = parseInt(match[2], 10);
+            targetSeconds = parseInt(match[3], 10);
+          }
+        } catch (e) {
+          console.warn("Timezone formatting failed, using client fallback:", e);
+        }
+      }
 
       setTimeState({
         time: timeString,
         date: dateString,
-        hours: now.getHours(),
-        minutes: now.getMinutes(),
-        seconds: now.getSeconds()
+        hours: targetHours,
+        minutes: targetMinutes,
+        seconds: targetSeconds
       });
     };
     
     formatTime();
     const interval = setInterval(formatTime, 1000);
     return () => clearInterval(interval);
-  }, []);
+  }, [detectionData?.timezone]);
 
   return (
     <section id="about" ref={ref} className="py-32 bg-[#0A0A0A] overflow-hidden">
@@ -136,17 +187,25 @@ export default function About() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: 0.6 }}
-                className="glass-card rounded-2xl p-5 flex items-center justify-between gap-6 min-w-[280px]"
+                className="glass-card rounded-2xl p-4 sm:p-5 flex items-center justify-between gap-4 sm:gap-6 min-w-0 sm:min-w-[280px] w-full"
               >
-                <div>
+                <div className="flex-1">
                   <p className="text-white/40 text-[10px] tracking-widest uppercase mb-1">LOCAL TIME</p>
                   <p className="text-white font-medium text-sm mb-0.5">
                     {detectionData?.city || "Current Location"}
                   </p>
-                  <p className="text-white/50 text-xs mb-3">{timeState.date || "Loading..."}</p>
-                  <p style={{ fontFamily: "var(--font-bebas)" }} className="text-teal text-2xl tracking-wide leading-none">
+                  <p className="text-white/50 text-xs mb-2">{timeState.date || "Loading..."}</p>
+                  <p style={{ fontFamily: "var(--font-bebas)" }} className="text-teal text-2xl tracking-wide leading-none mb-3">
                     {timeState.time || "..."}
                   </p>
+                  <button
+                    onClick={refineLocation}
+                    disabled={isRefining}
+                    className="inline-flex items-center gap-1.5 text-[10px] text-teal/80 hover:text-teal font-semibold tracking-wider uppercase transition-colors disabled:opacity-50 cursor-pointer"
+                  >
+                    <Compass size={10} className={isRefining ? "animate-spin" : ""} />
+                    {isRefining ? "Refining..." : "Refine by Signal"}
+                  </button>
                 </div>
 
                 {/* Analog Clock */}

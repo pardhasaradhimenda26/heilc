@@ -15,8 +15,13 @@ export default function GlobeSection() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const { detectionData } = usePersona();
   const country = detectionData?.country || "IN";
-  const label = CITY_LABELS[country] || "Chennai, India";
+  const label = detectionData?.city 
+    ? `${detectionData.city}, ${detectionData.country}`
+    : CITY_LABELS[country] || "Chennai, India";
   const isStartup = ["IN","NG","BR","ID","PK"].includes(country);
+
+  const userLat = detectionData?.latitude;
+  const userLon = detectionData?.longitude;
 
   useEffect(() => {
     let phi = 0;
@@ -28,6 +33,26 @@ export default function GlobeSection() {
     canvas.height = 600 * 2;
 
     let globe: any;
+
+    const baseMarkers = [
+      { location: [37.7595, -122.4367] as [number, number], size: 0.03 },
+      { location: [40.7128, -74.006] as [number, number], size: 0.03 },
+      { location: [13.0827, 80.2707] as [number, number], size: 0.1 },
+      { location: [1.3521, 103.8198] as [number, number], size: 0.03 },
+      { location: [51.5074, -0.1278] as [number, number], size: 0.03 },
+      { location: [35.6762, 139.6503] as [number, number], size: 0.03 },
+    ];
+
+    if (userLat !== undefined && userLon !== undefined) {
+      const isClose = baseMarkers.some(
+        (m) =>
+          Math.abs(m.location[0] - userLat) < 0.5 &&
+          Math.abs(m.location[1] - userLon) < 0.5
+      );
+      if (!isClose) {
+        baseMarkers.push({ location: [userLat, userLon], size: 0.1 });
+      }
+    }
 
     try {
       globe = createGlobe(canvas, {
@@ -43,14 +68,7 @@ export default function GlobeSection() {
         baseColor: [0.3, 0.3, 0.3],
         markerColor: [0.1, 0.8, 0.8],
         glowColor: [0.1, 0.8, 0.8],
-        markers: [
-          { location: [37.7595, -122.4367], size: 0.03 },
-          { location: [40.7128, -74.006], size: 0.03 },
-          { location: [13.0827, 80.2707], size: 0.1 },
-          { location: [1.3521, 103.8198], size: 0.03 },
-          { location: [51.5074, -0.1278], size: 0.03 },
-          { location: [35.6762, 139.6503], size: 0.03 },
-        ],
+        markers: baseMarkers,
         onRender: (state) => {
           state.phi = phi;
           phi += 0.005;
@@ -67,7 +85,7 @@ export default function GlobeSection() {
         globe.destroy();
       }
     };
-  }, []);
+  }, [userLat, userLon]);
 
   return (
     <section className="py-32 bg-[#030303] relative overflow-hidden">
@@ -80,13 +98,14 @@ export default function GlobeSection() {
             viewport={{ once: true }}
             className="flex items-center justify-center"
           >
-            <div style={{ width: 600, height: 600, maxWidth: "100%" }}>
+            <div style={{ width: 600, maxWidth: "100%", height: "auto", aspectRatio: "1 / 1" }}>
               <canvas
                 ref={canvasRef}
                 style={{
                   width: 600,
-                  height: 600,
                   maxWidth: "100%",
+                  height: "auto",
+                  aspectRatio: "1 / 1",
                   opacity: 0,
                 }}
               />
