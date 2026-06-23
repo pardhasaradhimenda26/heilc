@@ -158,7 +158,7 @@ export default function About() {
             </p>
 
             {/* Stats and Location Row */}
-            <div className="flex flex-col xl:flex-row gap-8 mb-10 pt-8 border-t border-white/8">
+            <div className="flex flex-col gap-8 mb-10 pt-8 border-t border-white/8">
               
               {/* Stats */}
               <div className="flex-1 grid grid-cols-3 gap-6">
@@ -187,7 +187,7 @@ export default function About() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: 0.6 }}
-                className="glass-card rounded-2xl p-4 sm:p-5 flex items-center justify-between gap-4 sm:gap-6 min-w-0 sm:min-w-[280px] w-full"
+                className="glass-card rounded-2xl p-4 sm:p-5 flex items-center justify-between gap-4 sm:gap-6 min-w-0 sm:min-w-[280px] w-full max-w-md"
               >
                 <div className="flex-1">
                   <p className="text-white/40 text-[10px] tracking-widest uppercase mb-1">LOCAL TIME</p>
